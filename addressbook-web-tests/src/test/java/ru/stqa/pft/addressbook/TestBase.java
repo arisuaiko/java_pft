@@ -25,43 +25,52 @@ public class TestBase {
   public void setUp() throws Exception {
     wd = new FirefoxDriver(new FirefoxOptions().setLegacy(true));
     wd.manage().timeouts().implicitlyWait(60, TimeUnit.SECONDS);
-
-    wd.get("http://localhost/addressbook/");
-    login("user", "admin", "pass", "secret", By.xpath("//form[@id='LoginForm']/input[3]"));
+    wd.get("http://localhost/addressbook/group.php");
+    login("admin", "secret");
   }
 
-  private void login(String user, String admin, String pass, String secret, By xpath) {
-    initGroupCreation(user);
-    wd.findElement(By.name(user)).clear();
-    wd.findElement(By.name(user)).sendKeys(admin);
-    initGroupCreation(pass);
-    wd.findElement(By.name(pass)).clear();
-    wd.findElement(By.name(pass)).sendKeys(secret);
-    wd.findElement(xpath).click();
+  private void login(String username, String password) {
+    wd.findElement(By.name("user")).click();
+    wd.findElement(By.name("user")).clear();
+    wd.findElement(By.name("user")).sendKeys(username);
+    wd.findElement(By.id("LoginForm")).click();
+    wd.findElement(By.name("pass")).click();
+    wd.findElement(By.name("pass")).clear();
+    wd.findElement(By.name("pass")).sendKeys(password);
+    wd.findElement(By.xpath("//form[@id='LoginForm']/input[3]")).click();
+  }
+
+  protected void returnToGroupPage() {
+    wd.findElement(By.linkText("group page")).click();
+  }
+
+  protected void submitGroupCreation() {
+    wd.findElement(By.name("submit")).click();
   }
 
   protected void fillGroupForm(GroupData groupData) {
-    wd.findElement(By.id("content")).click();
-    login("group_name", groupData.getName(), "group_header", groupData.getHeader(), By.name("group_footer"));
+    wd.findElement(By.name("group_name")).click();
+    wd.findElement(By.name("group_name")).clear();
+    wd.findElement(By.name("group_name")).sendKeys(groupData.getName());
+    wd.findElement(By.name("group_header")).click();
+    wd.findElement(By.name("group_header")).clear();
+    wd.findElement(By.name("group_header")).sendKeys(groupData.getHeader());
+    wd.findElement(By.name("group_footer")).click();
     wd.findElement(By.name("group_footer")).clear();
     wd.findElement(By.name("group_footer")).sendKeys(groupData.getFooter());
   }
 
-  protected void initGroupCreation(String s) {
-    wd.findElement(By.name(s)).click();
+  protected void initGroupCreation() {
+    wd.findElement(By.name("new")).click();
   }
 
-  protected void gotoGroupPage(String groups) {
-    wd.findElement(By.linkText(groups)).click();
+  protected void gotoGroupPage() {
+    wd.findElement(By.linkText("groups")).click();
   }
 
   @AfterMethod
   public void tearDown() {
     wd.quit();
-  }
-
-  protected void returnToGroupPage() {
-      wd.findElement(By.linkText("group page")).click();
   }
 
   protected void deleteSelectedGroups() {
